@@ -45,5 +45,4 @@ jobs:
         run: npm run build
 
       - name: Run Tests
-        run: npm run test -- --passWithNoTests
-        continue-on-error: true
+        run: npm test

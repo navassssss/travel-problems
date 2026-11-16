@@ -38,3 +38,5 @@ jobs:
 
       - name: Type Check & Build
         run: npm run build
+        env:
+          VITE_API_URL: https://api.example.com

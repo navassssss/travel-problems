@@ -167,7 +167,7 @@ export default function App() {
 
   return (
     <main style={{ maxWidth: '36rem', margin: '4rem auto', padding: '0 1rem', textAlign: 'left' }}>
-      <h1>Amanah</h1>
+      <h1>{import.meta.env.VITE_APP_NAME?.trim() || 'Amanah'}</h1>
       {loading && <p role="status">Checking your session…</p>}
       {!loading && !account && <a href={new URL('/auth/google', API_BASE_URL).href}>Sign in with Google</a>}
       {error && <p role="alert">{error}</p>}
