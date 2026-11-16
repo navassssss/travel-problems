@@ -1,6 +1,18 @@
-/**
- * Global API configuration for frontend communication with NestJS backend.
- * Falls back to http://localhost:3000 during local development if VITE_API_URL is omitted.
- */
-export const API_BASE_URL: string =
-  import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const configuredApiUrl = import.meta.env.VITE_API_URL?.trim();
+const productionApiUrl = 'https://api-zakath-t9sf.onrender.com';
+
+function resolveProductionApiUrl(): string {
+  try {
+    const url = new URL(configuredApiUrl || productionApiUrl);
+    if (url.protocol === 'https:' && !['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) {
+      return url.origin;
+    }
+  } catch {
+    // Fall back to the deployed Render service if the override is malformed.
+  }
+  return productionApiUrl;
+}
+
+export const API_BASE_URL = import.meta.env.DEV
+  ? configuredApiUrl || 'http://localhost:3000'
+  : resolveProductionApiUrl();

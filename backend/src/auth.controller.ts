@@ -20,12 +20,26 @@ export class AuthController {
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET || !GOOGLE_CALLBACK_URL || !JWT_SECRET || JWT_SECRET.length < 32) {
       throw new ServiceUnavailableException('Google sign-in is not configured');
     }
+    const production = process.env.NODE_ENV === 'production';
+    let frontend: URL;
+    let callback: URL;
+    try {
+      frontend = new URL(FRONTEND_URL || (production ? '' : 'http://localhost:5173'));
+      callback = new URL(GOOGLE_CALLBACK_URL);
+    } catch {
+      throw new ServiceUnavailableException('Google sign-in URLs are not configured');
+    }
+    if (production && [frontend, callback].some((url) =>
+      url.protocol !== 'https:' || ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname),
+    )) {
+      throw new ServiceUnavailableException('Google sign-in requires public HTTPS URLs');
+    }
     return {
       clientId: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
       callback: GOOGLE_CALLBACK_URL,
       secret: JWT_SECRET,
-      frontend: new URL(FRONTEND_URL ?? 'http://localhost:5173').origin,
+      frontend: frontend.origin,
     };
   }
 

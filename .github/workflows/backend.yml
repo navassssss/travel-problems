@@ -1,4 +1,4 @@
-name: Backend CI/CD (Render)
+name: Backend CI
 
 on:
   push:
@@ -6,12 +6,14 @@ on:
       - main
     paths:
       - 'backend/**'
+      - 'render.yaml'
       - '.github/workflows/backend.yml'
   pull_request:
     branches:
       - main
     paths:
       - 'backend/**'
+      - 'render.yaml'
       - '.github/workflows/backend.yml'
 
 jobs:
@@ -29,7 +31,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: 'npm'
           cache-dependency-path: backend/package-lock.json
 
@@ -45,19 +47,3 @@ jobs:
       - name: Run Tests
         run: npm run test -- --passWithNoTests
         continue-on-error: true
-
-  deploy-to-render:
-    name: Deploy to Render
-    needs: test-and-build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Trigger Render Deploy Hook
-        run: |
-          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]; then
-            echo "RENDER_DEPLOY_HOOK_URL secret is not set. If you use Render's native GitHub integration with autoDeploy: true, Render deploys automatically on push."
-          else
-            curl -f -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
-            echo "Successfully triggered Render deployment!"
-          fi
