@@ -8,12 +8,66 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum UserRole {
+  SUPER_ADMIN
+  MAHALL_ADMIN
+  USER
+}
+
+enum EligibilityStatus {
+  PENDING
+  MORE_INFORMATION_REQUIRED
+  APPROVED
+  REJECTED
+}
+
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
-  avatarUrl String?
-  googleId  String?  @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                 String            @id @default(uuid())
+  email              String            @unique
+  name               String?
+  avatarUrl          String?
+  googleId           String?           @unique
+  role               UserRole          @default(USER)
+  mahallId           String?
+  mahall             Mahall?           @relation(fields: [mahallId], references: [id], onDelete: Restrict)
+  eligibilityCase    EligibilityCase?  @relation("EligibilityApplicant")
+  eligibilityReviews EligibilityCase[] @relation("EligibilityReviewer")
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  @@index([mahallId])
+}
+
+model Mahall {
+  id            String            @id @default(uuid())
+  name          String
+  locality      String
+  members       User[]
+  assignedCases EligibilityCase[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
+
+model EligibilityCase {
+  id                    String            @id @default(uuid())
+  applicantId           String            @unique
+  applicant             User              @relation("EligibilityApplicant", fields: [applicantId], references: [id], onDelete: Restrict)
+  reviewingMahallId     String?
+  reviewingMahall       Mahall?           @relation(fields: [reviewingMahallId], references: [id], onDelete: Restrict)
+  status                EligibilityStatus @default(PENDING)
+  locality              String
+  postalCode            String
+  householdSize         Int
+  monthlyIncomePaise    Int
+  monthlyExpensesPaise  Int
+  additionalInformation String?
+  reviewedById          String?
+  reviewedBy            User?             @relation("EligibilityReviewer", fields: [reviewedById], references: [id], onDelete: Restrict)
+  reviewedAt            DateTime?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  @@index([reviewingMahallId, status])
+  @@index([postalCode, status])
+  @@index([reviewedById])
 }

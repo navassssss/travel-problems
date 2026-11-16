@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService implements OnModuleDestroy {
-  private readonly client = new PrismaClient();
+  readonly client = new PrismaClient();
 
   async checkConnection(): Promise<void> {
     await this.client.$queryRaw`SELECT 1`;
