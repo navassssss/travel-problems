@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: nestjs-backend
+    name: api-zakath
     runtime: node
     plan: free
     region: oregon

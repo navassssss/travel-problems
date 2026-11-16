@@ -35,7 +35,7 @@ When changes are pushed to `frontend/**` on the `main` branch, `.github/workflow
 - `VERCEL_TOKEN`: Your Vercel API access token (generate in Vercel Account Settings > Tokens).
 - `VERCEL_ORG_ID`: Found in your Vercel project `.vercel/project.json` or team settings.
 - `VERCEL_PROJECT_ID`: Found in your Vercel project settings.
-- `VITE_API_URL`: Your backend URL on Render (e.g., `https://nestjs-backend.onrender.com`).
+- `VITE_API_URL`: Your backend URL on Render (e.g., `https://api-zakath.onrender.com`).
 
 *(Alternatively, connecting the GitHub repository directly in the Vercel dashboard with Root Directory set to `frontend` will auto-deploy on every push zero-config).*
 
